@@ -1,232 +1,135 @@
-# Research Intelligence Platform
+# Research Intelligence Platform (Enterprise Edition)
 
-A scalable research intelligence platform that ingests, processes, and extracts insights from massive volumes of unstructured documents (PDFs, reports, research papers) using hybrid search (vector + keyword).
+[![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.109+-009688?style=flat-square&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![Next.js](https://img.shields.io/badge/Next.js-14.0+-000000?style=flat-square&logo=next.js&logoColor=white)](https://nextjs.org/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-336791?style=flat-square&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED?style=flat-square&logo=docker&logoColor=white)](https://www.docker.com/)
 
-## Architecture
+An enterprise-grade research intelligence platform that transforms unstructured documents into actionable insights. Powered by **Hybrid Semantic Search**, it combines vector embeddings (Qdrant) with keyword search (Elasticsearch) to deliver precise results from thousands of PDFs, reports, and financial statements.
 
-### Tech Stack
+---
 
-- **Backend**: FastAPI (Python 3.11)
-- **Frontend**: Next.js 14 (TypeScript)
-- **Database**: PostgreSQL 15
-- **Vector DB**: Qdrant
-- **Search**: Elasticsearch
-- **Task Queue**: Celery + Redis
-- **Storage**: MinIO (S3-compatible)
+## 🚀 Key Features
 
-### System Components
+### 🧠 Intelligent Search
+- **Hybrid Search Engine**: Fuses vector proximity (semantic meaning) with keyword matching (exact terms) using Reciprocal Rank Fusion (RRF).
+- **Deep Semantic Understanding**: Uses `sentence-transformers/all-MiniLM-L6-v2` for state-of-the-art embedding generation.
+- **Smart Filtering**: Drill down by company entity, document type, or date range.
 
-1. **Document Ingestion** - Upload and validate PDFs
-2. **Processing Pipeline** - Parse, chunk, and embed documents
-3. **Storage Layer** - PostgreSQL, Qdrant, Elasticsearch, MinIO
-4. **Search Engine** - Hybrid vector + keyword search
-5. **API Layer** - RESTful API with FastAPI
-6. **Web UI** - Search interface and document viewer
+### 💼 Corporate UI / UX
+- **Professional Design System**: A "Deep Navy & Vibrant Blue" aesthetic tailored for financial and research environments.
+- **Glassmorphism Interface**: Modern, sticky headers and tactile interactive elements.
+- **Data-Grid Repository**: Enterprise-class document management view with status badges and metadata analysis.
 
-## Quick Start
+### ⚡ Robust Architecture
+- **Asynchronous Processing**: Celery + Redis pipeline for non-blocking document ingestion.
+- **Scalable Storage**: MinIO (S3-compatible) for object storage and PostgreSQL for structured metadata.
+- **Fault Tolerance**: Comprehensive error handling and retry mechanisms.
+
+---
+
+## 🏗️ Architecture
+
+```mermaid
+graph TD
+    User[Web Client] -->|Next.js App| Frontend
+    Frontend -->|REST API| API[FastAPI Gateway]
+    
+    subgraph Data Processing
+        API -->|Task| Queue[Redis Task Queue]
+        Queue -->|Consume| Worker[Celery Worker]
+        Worker -->|Extract Text| Python[PDF Parser]
+        Worker -->|Generate| Model[Embedding Model]
+    end
+    
+    subgraph Storage
+        Worker -->|Store Vectors| VectorDB[(Qdrant)]
+        Worker -->|Index Text| SearchEngine[(Elasticsearch)]
+        Worker -->|Save File| ObjectStore[(MinIO S3)]
+        Worker -->|Update Meta| RelationalDB[(PostgreSQL)]
+    end
+    
+    API -->|Query| VectorDB
+    API -->|Query| SearchEngine
+    API -->|Read| RelationalDB
+```
+
+---
+
+## 🛠️ Quick Start
 
 ### Prerequisites
+- Docker & Docker Compose
+- Python 3.11+
+- Node.js 18+
 
-- Docker and Docker Compose
-- Node.js 18+ (for frontend development)
-- Python 3.11+ (for backend development)
-
-### 1. Start Infrastructure Services
-
+### 1. Launch Infrastructure
+Start the database, vector store, and object storage services:
 ```bash
 docker-compose up -d
 ```
+*Note: Wait ~30 seconds for all services to become healthy.*
 
-This starts:
-- PostgreSQL (port 5432)
-- Redis (port 6379)
-- Qdrant (port 6333)
-- Elasticsearch (port 9200)
-- MinIO (port 9000, console 9001)
-
-### 2. Set Up Backend
-
+### 2. Backend Setup
 ```bash
 cd backend
-
-# Create virtual environment
 python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+# Windows:
+venv\Scripts\activate
+# Mac/Linux:
+# source venv/bin/activate
 
-# Install dependencies
 pip install -r requirements.txt
-
-# Run database migrations
-alembic upgrade head
-
-# Start FastAPI server
-uvicorn main:app --reload --port 8000
+python main.py
 ```
+*API available at `http://localhost:8000`*
 
-### 3. Start Celery Worker
-
-```bash
-cd backend
-source venv/bin/activate
-celery -A tasks.celery_app worker --loglevel=info
-```
-
-### 4. Set Up Frontend
-
+### 3. Frontend Setup
 ```bash
 cd frontend
-
-# Install dependencies
 npm install
-
-# Start development server
 npm run dev
 ```
+*UI available at `http://localhost:3000`*
 
-### 5. Access the Application
+---
 
-- **Web UI**: http://localhost:3000
-- **API Docs**: http://localhost:8000/docs
-- **MinIO Console**: http://localhost:9001 (minioadmin/minioadmin)
+## 🧪 Demo Mode (No Docker Required)
 
-## Environment Variables
-
-Copy `.env.example` to `.env` and configure:
+Want to try the UI without setting up the full database stack?
+You can run the backend in **Demo Mode**, which uses in-memory storage.
 
 ```bash
-cp .env.example .env
+# In backend directory
+python demo_main.py
 ```
+*Note: Uploaded documents will not persist after server restart in demo mode.*
 
-Key variables:
-- `DATABASE_URL` - PostgreSQL connection string
-- `REDIS_URL` - Redis connection string
-- `QDRANT_URL` - Qdrant host
-- `ELASTICSEARCH_URL` - Elasticsearch host
-- `MINIO_ENDPOINT` - MinIO endpoint
-- `MINIO_ACCESS_KEY` - MinIO access key
-- `MINIO_SECRET_KEY` - MinIO secret key
+---
 
-## Usage
+## 📚 API Documentation
 
-### Upload Documents
+Once the backend is running, access the interactive Swagger UI:
+- **Docs**: [http://localhost:8000/docs](http://localhost:8000/docs)
+- **ReDoc**: [http://localhost:8000/redoc](http://localhost:8000/redoc)
 
-1. Navigate to http://localhost:3000/upload
-2. Drag and drop PDF files or click to select
-3. Documents are processed asynchronously
-4. Check processing status in the UI
+### Core Endpoints
+- `POST /api/upload`: Asynchronous PDF ingestion.
+- `POST /api/search`: Hybrid search query with filters.
+- `GET /api/documents`: List managed documents.
 
-### Search Documents
+---
 
-1. Go to http://localhost:3000
-2. Enter search query
-3. Apply filters (company, date range)
-4. View results with relevance scores
-5. Click to view full document
+## 🔮 Roadmap
 
-## API Endpoints
+- [x] **Phase 1: MVP & Core Search** (Completed)
+- [x] **Phase 1.5: Corporate UI Redesign** (Completed)
+- [ ] **Phase 2: Advanced Analytics** (Time-series data, Entity linking)
+- [ ] **Phase 3: Multi-User Collaboration** (Shared workspaces, annotations)
 
-### Documents
-- `POST /api/upload` - Upload document
-- `GET /api/documents` - List documents
-- `GET /api/documents/{id}` - Get document details
-- `GET /api/documents/{id}/download` - Download original
+---
 
-### Search
-- `POST /api/search` - Hybrid search query
-- `GET /api/search/filters` - Get available filters
+## 📄 License
 
-### Health
-- `GET /health` - Service health check
-- `GET /health/services` - Check all dependent services
-
-## Development
-
-### Backend Testing
-
-```bash
-cd backend
-pytest tests/
-```
-
-### Frontend Testing
-
-```bash
-cd frontend
-npm test
-```
-
-## Project Structure
-
-```
-research-platform/
-├── backend/
-│   ├── api/              # API route handlers
-│   ├── models/           # Database models
-│   ├── services/         # Business logic
-│   ├── tasks/            # Celery tasks
-│   ├── tests/            # Unit and integration tests
-│   ├── alembic/          # Database migrations
-│   ├── main.py           # FastAPI app
-│   └── requirements.txt
-├── frontend/
-│   ├── app/              # Next.js pages (App Router)
-│   ├── components/       # React components
-│   ├── lib/              # Utilities and API client
-│   ├── public/           # Static assets
-│   └── package.json
-├── docker-compose.yml    # Infrastructure services
-├── .env.example          # Environment template
-└── README.md
-```
-
-## Phase 1 MVP Features
-
-✅ Document upload (PDF)  
-✅ PDF text extraction  
-✅ Fixed-size chunking (750 tokens)  
-✅ Embedding generation (sentence-transformers)  
-✅ Vector search (Qdrant)  
-✅ Keyword search (Elasticsearch)  
-✅ Hybrid search with scoring  
-✅ Search UI with filters  
-✅ Document viewer  
-
-## Roadmap
-
-### Phase 2 (Months 3-4)
-- OCR for scanned documents
-- User authentication
-- Advanced filters and facets
-- Batch upload
-- Admin dashboard
-
-### Phase 3 (Months 5-6)
-- Entity extraction (companies, dates, metrics)
-- Time-series analytics
-- Document clustering
-- LLM-powered summarization
-- Saved queries and alerts
-
-## Performance
-
-**Current benchmarks** (1000 documents):
-- Upload: ~2 seconds per document
-- Processing: ~5 seconds per document
-- Search latency: <1.5 seconds (p95)
-- Embedding generation: ~100 documents/minute
-
-## Contributing
-
-1. Fork the repository
-2. Create feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open Pull Request
-
-## License
-
-MIT License - see LICENSE file for details
-
-## Support
-
-For issues and questions, please open a GitHub issue.
+MIT © 2026 Research Platform Team
