@@ -1,0 +1,89 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Corporate Brand Palette - Unique & Professional */
+    --primary: 222 47% 11%;    /* #0f172a - Slate 900 (Deep Navy) */
+    --primary-light: 215 25% 27%; /* Slate 700 */
+    --accent: 221 83% 53%;     /* #2563eb - Blue 600 (Vibrant Action) */
+    --accent-hover: 224 76% 48%; /* Blue 700 */
+    
+    --bg-page: 210 40% 98%;    /* #f8fafc - Slate 50 */
+    --bg-surface: 0 0% 100%;   /* White */
+    
+    --text-main: 215 28% 17%;  /* Slate 900 */
+    --text-muted: 215 16% 47%; /* Slate 500 */
+    
+    --border-subtle: 214 32% 91%; /* Slate 200 */
+    --border-focus: 221 83% 53%;  /* Blue 600 */
+  }
+
+  html {
+    @apply h-full antialiased scroll-smooth;
+  }
+  
+  body {
+    @apply h-full bg-[hsl(var(--bg-page))] text-[hsl(var(--text-main))] font-sans selection:bg-blue-100 selection:text-blue-900;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight text-[hsl(var(--primary))];
+  }
+}
+
+@layer components {
+  /* Buttons - Clean & Tactile */
+  .btn {
+    @apply inline-flex items-center justify-center px-5 py-2.5 rounded-lg font-medium text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  
+  .btn-primary {
+    @apply bg-blue-600 text-white shadow-sm hover:bg-blue-700 hover:shadow-md focus:ring-blue-500 active:transform active:scale-[0.98];
+  }
+  
+  .btn-secondary {
+    @apply bg-white text-slate-700 border border-slate-300 shadow-sm hover:bg-slate-50 hover:text-slate-900 focus:ring-slate-400;
+  }
+
+  .btn-danger {
+    @apply bg-white text-red-600 border border-red-200 shadow-sm hover:bg-red-50 hover:border-red-300 focus:ring-red-500;
+  }
+  
+  /* Inputs - Readable & Accessible */
+  .input {
+    @apply w-full px-4 py-2.5 bg-white border border-slate-300 rounded-lg text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-200;
+  }
+  
+  .label {
+    @apply block text-sm font-medium text-slate-700 mb-1.5;
+  }
+  
+  /* Cards - Professional Surfaces */
+  .card {
+    @apply bg-white rounded-xl border border-slate-200 shadow-[0_2px_8px_rgba(15,23,42,0.04)] transition-all duration-300 hover:shadow-[0_8px_24px_rgba(15,23,42,0.06)];
+  }
+
+  /* Status Badges */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border;
+  }
+  
+  .badge-blue { @apply bg-blue-50 text-blue-700 border-blue-200; }
+  .badge-green { @apply bg-emerald-50 text-emerald-700 border-emerald-200; }
+  .badge-yellow { @apply bg-amber-50 text-amber-700 border-amber-200; }
+  .badge-red { @apply bg-rose-50 text-rose-700 border-rose-200; }
+  .badge-gray { @apply bg-slate-100 text-slate-600 border-slate-200; }
+}
+
+/* Custom Utilities */
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  .glass-header {
+    @apply bg-white/80 backdrop-blur-md border-b border-slate-200/60 sticky top-0 z-50;
+  }
+}
